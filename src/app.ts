@@ -1,14 +1,23 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response, NextFunction, urlencoded } from "express";
 import createHttpError, { HttpError } from "http-errors";
-import { config } from "./config/config";
-import { error } from "console";
+import cors from "cors";
 import globalErrorHandler from "./middlewares/globalErrorHandler";
 import userRouter from "./user/userRoutes";
 import bookRouter from "./book/bookRoutes";
 
 const app = express();
 
-//Routes
+//---------Middleware -----------------
+// Middleware to parse JSON bodies
+app.use(express.json());
+
+// Middleware to parse URL-encoded bodies with the extended option
+app.use(express.urlencoded({ extended: true }));
+
+// Middleware to enable Cross-Origin Resource Sharing (CORS)
+app.use(cors());
+
+//----------Routes--------------
 
 //http Methods:
 app.get("/", (req, res) => {
