@@ -74,7 +74,7 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
       return next(createHttpError(401, "Invalid credentials"));
     }
 
-    // Step 4: Generate a JWT token
+    // Step 4: Generate a JWT token and send requiset
     generateToken(res, user, `Welcome Back ${user.name}`);
   } catch (error) {
     console.error("Error during login:", error);

@@ -4,15 +4,15 @@ const userSchema = new mongoose.Schema<User>(
   {
     name: {
       type: String,
-      require: true,
+      required: true,
     },
     email: {
       type: String,
-      require: true,
+      required: true,
     },
     password: {
       type: String,
-      require: true,
+      required: true,
     },
     role: {
       type: String,
@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema<User>(
       default: "student",
     },
     enrolledCourses: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: [mongoose.Schema.Types.ObjectId],
       ref: "Course",
     },
     photoUrl: {
