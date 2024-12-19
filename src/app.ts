@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import globalErrorHandler from "./middlewares/globalErrorHandler";
 import userRouter from "./user/userRoutes";
 import bookRouter from "./book/bookRoutes";
+import { config } from "./config/config";
 
 const app = express();
 
@@ -13,7 +14,12 @@ app.use(express.json());
 // Middleware to parse URL-encoded bodies with the extended option
 app.use(express.urlencoded({ extended: true }));
 // Middleware to enable Cross-Origin Resource Sharing (CORS)
-app.use(cors());
+app.use(
+  cors({
+    origin: [config.FRONTEND_URL as string],
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 
 //----------Routes--------------
