@@ -78,8 +78,58 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     generateToken(res, user, `Welcome Back ${user.name}`);
   } catch (error) {
     console.error("Error during login:", error);
-    return next(createHttpError(500, "Internal server error"));
+    return next(createHttpError(500, "Failed to Login"));
   }
 };
 
-export { registerUser, loginUser };
+const logoutUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    // Clear the token cookie
+    res
+      .status(200)
+      .cookie("token", "", {
+        maxAge: 0, // Immediately expires the cookie
+        httpOnly: true, // Helps prevent XSS
+        sameSite: "strict", // Prevent CSRF
+      })
+      .json({
+        message: "Logged out successfully",
+        success: true,
+      });
+  } catch (error) {
+    console.error("Error during logout:", error);
+    next(createHttpError(500, "Failed to log out"));
+  }
+};
+const getUserProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const userId = req.id;
+
+    if (!userId) {
+      return next(createHttpError(401, "Unauthorized: Missing user ID"));
+    }
+
+    const user = await User.findById(userId).select("-password");
+
+    if (!user) {
+      return next(createHttpError(404, "User not found"));
+    }
+
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    return next(createHttpError(500, "Failed to load user profile"));
+  }
+};
+export { registerUser, loginUser, logoutUser, getUserProfile };
