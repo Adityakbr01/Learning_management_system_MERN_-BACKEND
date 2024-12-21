@@ -3,6 +3,7 @@ import createHttpError from "http-errors";
 import User from "./userModel";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/genrateToken";
+import { deleteMediaFromCloudinary, uploadMedia } from "../utils/cloudinary";
 
 const registerUser = async (
   req: Request,
@@ -132,4 +133,59 @@ const getUserProfile = async (
     return next(createHttpError(500, "Failed to load user profile"));
   }
 };
-export { registerUser, loginUser, logoutUser, getUserProfile };
+
+const updateProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const userId = req.id; // Assuming the user ID is set by an authentication middleware
+    const { name } = req.body;
+    const profilePhoto = req.file;
+
+    // Find the user by ID
+    const user = await User.findById(userId);
+    if (!user) {
+      return next(createHttpError(404, "User not found"));
+    }
+
+    // If the user already has a photo, delete it from Cloudinary
+    if (user.photoUrl) {
+      const publicId = user.photoUrl.split("/").pop()?.split(".")[0]; // Extract the publicId
+      if (publicId) {
+        await deleteMediaFromCloudinary(publicId);
+      }
+    }
+
+    // Upload the new photo to Cloudinary
+    if (profilePhoto) {
+      const cloudResponse = await uploadMedia(profilePhoto.path);
+      const photoUrl = cloudResponse?.secure_url;
+
+      // Update the user with new data
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { name, photoUrl },
+        { new: true }
+      ).select("-password"); // Exclude the password field
+
+      // Send the response
+      res.status(200).json({
+        success: true,
+        user: updatedUser,
+        message: "Profile updated successfully",
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "No profile photo uploaded",
+      });
+    }
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    next(createHttpError(500, "Failed to update profile"));
+  }
+};
+
+export { registerUser, loginUser, logoutUser, getUserProfile, updateProfile };

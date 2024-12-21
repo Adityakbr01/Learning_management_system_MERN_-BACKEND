@@ -7,6 +7,9 @@ const _config = {
   env: process.env.NODE_ENV,
   JWT_SECRET: process.env.JWT_SECRET,
   FRONTEND_URL: process.env.FRONTEND_URL,
+  Cloudinary_Name: process.env.Cloudinary_Name,
+  cloudinary_API_key: process.env.cloudinary_API_key,
+  cloudinary_API_Secret: process.env.cloudinary_API_Secret,
 };
 
 export const config = Object.freeze(_config);
