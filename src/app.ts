@@ -6,6 +6,7 @@ import globalErrorHandler from "./middlewares/globalErrorHandler";
 import userRouter from "./user/userRoutes";
 import bookRouter from "./book/bookRoutes";
 import { config } from "./config/config";
+import courserouter from "./Courses/courseRoutes";
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.get("/", (req, res) => {
 
 //Routes
 app.use("/api/users", userRouter);
+app.use("/api/course", courserouter);
 app.use("/api/books", bookRouter);
 
 //Global error Handler
