@@ -151,8 +151,64 @@ const editCourse = async (
     next(createHttpError(500, "Failed to update course"));
   }
 };
+interface AuthenticatedRequest extends Request {
+  user?: {
+    id: string;
+    role: string;
+  };
+}
 
-export { createCourse, getCreatorCourses, editCourse };
+// Controller to Get Course by ID
+const getCourseById = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { courseId } = req.params; 
+
+    // Find the course by ID
+    const course = await Course.findById(courseId);
+    if (!course) {
+      next(createHttpError(404, "Course not found")); // Pass 404 error to error handler
+      return;
+    }
+
+    // Send success response
+    res.status(200).json({
+      course,
+      message: "Course found successfully.",
+    });
+  } catch (error) {
+    console.error("Error fetching course:", error);
+    next(createHttpError(500, "Failed to fetch course")); // Pass 500 error to error handler
+  }
+};
+
+// const getCourseById = async (
+//   req: AuthenticatedRequest,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const { courseId } = req.params;
+
+//     const course = await Course.findById(courseId);
+//     if (!course) {
+//       return next(createHttpError(404, "Course not Found"));
+//     }
+
+//     return res.json({
+//       course,
+//       message: "Course founded succ..",
+//     });
+//   } catch (error) {
+//     console.error("Error updating course:", error);
+//     next(createHttpError(500, "Failed to fetch course"));
+//   }
+// };
+
+export { createCourse, getCreatorCourses, editCourse, getCourseById };
 
 // const editCourse = async (
 //   req: AuthenticatedRequest,
@@ -278,3 +334,7 @@ export { createCourse, getCreatorCourses, editCourse };
 // };
 
 // Custom Authenticated Request Interface
+
+// Adjust path as per your project structure
+
+export default getCourseById;

@@ -43,6 +43,7 @@ const CourseSchema: Schema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Lecture",
+        default: [],
       },
     ],
     creator: {
