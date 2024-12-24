@@ -165,7 +165,7 @@ const getCourseById = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { courseId } = req.params; 
+    const { courseId } = req.params;
 
     // Find the course by ID
     const course = await Course.findById(courseId);
@@ -185,156 +185,90 @@ const getCourseById = async (
   }
 };
 
-// const getCourseById = async (
-//   req: AuthenticatedRequest,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   try {
-//     const { courseId } = req.params;
+export const togglePublishCourse = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { courseId } = req.params;
+    const { publish } = req.query;
 
-//     const course = await Course.findById(courseId);
-//     if (!course) {
-//       return next(createHttpError(404, "Course not Found"));
-//     }
+    // Find the course by ID
+    const course = await Course.findById(courseId);
+    if (!course) {
+      res.status(404).json({
+        message: "Course not found!",
+      });
+      return;
+    }
 
-//     return res.json({
-//       course,
-//       message: "Course founded succ..",
-//     });
-//   } catch (error) {
-//     console.error("Error updating course:", error);
-//     next(createHttpError(500, "Failed to fetch course"));
-//   }
-// };
+    // Update the publish status based on query parameter
+    course.isPublished = publish === "true";
 
-export { createCourse, getCreatorCourses, editCourse, getCourseById };
+    // Save the updated course
+    await course.save();
 
-// const editCourse = async (
-//   req: AuthenticatedRequest,
-//   res: Response,
-//   next: NextFunction
-// ) : Promise<any> => {
-//   try {
-//     const courseId = req.params.courseId;
-//     const {
-//       category,
-//       courseLevel,
-//       coursePrice,
-//       courseTitle,
-//       description,
-//       subTitle,
-//     } = req.body;
-//     const thumbnail = req.file;
-//     console.log(category,
-//       courseLevel,
-//       coursePrice,
-//       courseTitle,
-//       description,
-//       subTitle,)
+    // Send a success response
+    res.status(200).json({
+      message: `Course has been ${
+        course.isPublished ? "published" : "unpublished"
+      } successfully.`,
+      course,
+    });
+  } catch (error) {
+    console.error("Error toggling course publish status:", error);
+    next(createHttpError(500, "Failed to update publish status."));
+  }
+};
 
-//     let course = await Course.findById(courseId);
-//     if (!course) {
-//       return res.status(404).json({
-//         message: "Course not found!",
-//       });
-//     }
+const getPublishedCourse = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const courses = await Course.find({ isPublished: "true" }).populate({
+      path: "creator",
+      select: "name photoUrl",
+    });
 
-//     let courseThumbnail;
-//     if (thumbnail) {
-//       if (course.courseThumbnail) {
-//         const publicId = course.courseThumbnail.split("/").pop()?.split(".")[0];
-//         await deleteMediaFromCloudinary(publicId as string);
-//       }
-//       //upload a thumbnail on cloudinary
-//       courseThumbnail = await uploadMedia(thumbnail.path);
-//     }
+    if (courses.length === 0) {
+      res.status(404).json({
+        message: "No published courses found.",
+      });
+      return;
+    }
 
-//     const updateData = {
-//       category,
-//       courseLevel,
-//       coursePrice,
-//       courseTitle,
-//       description,
-//       subTitle,
-//       courseThumbnail: courseThumbnail?.secure_url,
-//     };
+    res.status(200).json({
+      courses,
+      message: "Published courses fetched successfully.",
+    });
+  } catch (error) {
+    console.error("Error fetching published courses:", error);
+    next(createHttpError(500, "Failed to get published courses."));
+  }
+};
 
-//     course = await Course.findByIdAndUpdate(courseId, updateData, {
-//       new: true,
-//     });
-//     return res.status(200).json({
-//       course,
-//       message: "Course update succ..",
-//     });
-//   } catch (error) {
-//     console.error("Error Updating courses:", error);
-//     next(createHttpError(500, "Failed to update course"));
-//   }
-// };
 
-// const editCourse = async (
-//   req: AuthenticatedRequest,
-//   res: Response,
-//   next: NextFunction
-// ): Promise<Response | void> => {
-//   try {
-//     const courseId = req.params.courseId;
-//     const {
-//       category,
-//       courseLevel,
-//       coursePrice,
-//       courseTitle,
-//       description,
-//       subTitle,
-//     } = req.body;
 
-//     const thumbnail = req.file;
 
-//     let course = await Course.findById(courseId);
-//     if (!course) {
-//       return res.status(404).json({
-//         message: "Course not found!",
-//       });
-//     }
 
-//     let courseThumbnail: string | undefined;
-//     if (thumbnail) {
-//       if (course.courseThumbnail) {
-//         const publicId = course.courseThumbnail.split("/").pop()?.split(".")[0];
-//         if (publicId) await deleteMediaFromCloudinary(publicId);
-//       }
-//       // Upload a thumbnail to Cloudinary
-//       const uploadResult = await uploadMedia(thumbnail.path);
-//       courseThumbnail = uploadResult.secure_url;
-//     }
 
-//     // Dynamically build the update data only for provided fields
-//     const updateData: Partial<typeof course> = {};
-//     if (category) updateData.category = category;
-//     if (courseLevel) updateData.courseLevel = courseLevel;
-//     if (coursePrice) updateData.coursePrice = coursePrice;
-//     if (courseTitle) updateData.courseTitle = courseTitle;
-//     if (description) updateData.courseDiscription = description;
-//     if (subTitle) updateData.subTitle = subTitle;
-//     if (courseThumbnail) updateData.courseThumbnail = courseThumbnail;
 
-//     // Update the course with provided fields
-//     course = await Course.findByIdAndUpdate(courseId, updateData, {
-//       new: true,
-//     });
-//     return res.status(200).json({
-//       course,
-//       message: "Course updated successfully.",
-//     });
-//   } catch (error) {
-//     console.error("Error updating course:", error);
-//     next(createHttpError(500, "Failed to update course"));
-//   }
-// };
 
-// Custom Authenticated Request Interface
 
-// Adjust path as per your project structure
+
+
+
+
+
+export {
+  createCourse,
+  getCreatorCourses,
+  editCourse,
+  getCourseById,
+  getPublishedCourse,
+};
 
 export default getCourseById;

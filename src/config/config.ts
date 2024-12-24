@@ -10,6 +10,9 @@ const _config = {
   Cloudinary_Name: process.env.Cloudinary_Name,
   cloudinary_API_key: process.env.cloudinary_API_key,
   cloudinary_API_Secret: process.env.cloudinary_API_Secret,
+  Publishable_key_STRIP: process.env.Publishable_key_STRIP,
+  SecretKey_STRIP: process.env.SecretKey_STRIP,
+  WEBHOOK_ENDPOINT_SECRET: process.env.WEBHOOK_ENDPOINT_SECRET,
 };
 
 export const config = Object.freeze(_config);

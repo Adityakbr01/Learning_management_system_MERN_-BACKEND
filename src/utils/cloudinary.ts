@@ -1,3 +1,4 @@
+import fs from "fs/promises";
 import {
   v2 as cloudinary,
   UploadApiResponse,
@@ -18,17 +19,34 @@ cloudinary.config({
  * @returns Cloudinary upload result
  * @throws Error if the upload fails
  */
+
+// Function to upload media to Cloudinary and delete the local file
 export const uploadMedia = async (file: string): Promise<UploadApiResponse> => {
   try {
+    // Upload the file to Cloudinary
     const uploadResult: UploadApiResponse = await cloudinary.uploader.upload(
       file,
       {
         resource_type: "auto",
       }
     );
+
+    // Delete the local file after successful upload
+    await fs.unlink(file);
+    console.log(`Local file ${file} deleted successfully.`);
+
     return uploadResult;
   } catch (error) {
     console.error("Error uploading media to Cloudinary:", error);
+
+    // Attempt to delete the local file even if the upload fails
+    try {
+      await fs.unlink(file);
+      console.log(`Local file ${file} deleted after upload failure.`);
+    } catch (unlinkError) {
+      console.error(`Error deleting local file ${file}:`, unlinkError);
+    }
+
     throw error as UploadApiErrorResponse; // Ensure proper error typing
   }
 };
