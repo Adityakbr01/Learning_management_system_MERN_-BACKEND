@@ -2,6 +2,8 @@ import express from "express";
 import isAuthenticated from "../middlewares/isAuthenticated";
 import {
   createCheckOutSesion,
+  getAllPurchasedCourse,
+  getCourseDetailWithPurchaseStatus,
   striptWebhook,
 } from "./purchaseCourseController";
 
@@ -20,7 +22,11 @@ Purchaserouter.post(
   }),
   striptWebhook
 );
-Purchaserouter.get("/course/:courseId/detail-with-status");
-Purchaserouter.get("/");
+Purchaserouter.get(
+  "/course/:courseId/detail-with-status",
+  isAuthenticated,
+  getCourseDetailWithPurchaseStatus
+);
+Purchaserouter.get("/", getAllPurchasedCourse);
 
 export default Purchaserouter;

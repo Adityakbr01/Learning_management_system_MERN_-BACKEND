@@ -203,13 +203,14 @@ export const getCourseDetailWithPurchaseStatus = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const { courseId } = req.params;
     const userId = req.id; // Ensure this is set in middleware
 
     if (!courseId) {
-      return res.status(400).json({ message: "Course ID is required." });
+      res.status(400).json({ message: "Course ID is required." });
+      return;
     }
 
     const course = await Course.findById(courseId)
@@ -217,21 +218,24 @@ export const getCourseDetailWithPurchaseStatus = async (
       .populate("lectures");
 
     if (!course) {
-      return res.status(404).json({ message: "Course not found!" });
+      res.status(404).json({ message: "Course not found!" });
+      return;
     }
 
     const purchase = await CoursePurchase.findOne({ userId, courseId });
 
-    return res.status(200).json({
+    res.status(200).json({
       message: "Course details retrieved successfully.",
       course,
       purchased: !!purchase, // Converts to boolean
     });
+    return;
   } catch (error) {
     console.error("Error fetching course details:", error);
-    return res.status(500).json({
+    res.status(500).json({
       message: "An error occurred while fetching course details.",
     });
+    return;
   }
 };
 
@@ -239,27 +243,30 @@ export const getAllPurchasedCourse = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const purchasedCourses = await CoursePurchase.find({
       status: "complete",
     }).populate("courseId");
 
     if (purchasedCourses.length === 0) {
-      return res.status(404).json({
+      res.status(404).json({
         message: "No purchased courses found.",
         purchasedCourses: [],
       });
+      return;
     }
 
-    return res.status(200).json({
+    res.status(200).json({
       message: "Purchased courses retrieved successfully.",
       purchasedCourses,
     });
+    return;
   } catch (error) {
     console.error("Error fetching purchased courses:", error);
-    return res.status(500).json({
+    res.status(500).json({
       message: "An error occurred while fetching purchased courses.",
     });
+    return;
   }
 };
