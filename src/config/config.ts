@@ -13,6 +13,8 @@ const _config = {
   Publishable_key_STRIP: process.env.Publishable_key_STRIP,
   SecretKey_STRIP: process.env.SecretKey_STRIP,
   WEBHOOK_ENDPOINT_SECRET: process.env.WEBHOOK_ENDPOINT_SECRET,
+  webcall:
+    "stripe listen --forward-to http://localhost:5543/api/purchase/webhook",
 };
 
 export const config = Object.freeze(_config);

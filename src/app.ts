@@ -7,6 +7,7 @@ import userRouter from "./user/userRoutes";
 import bookRouter from "./book/bookRoutes";
 import { config } from "./config/config";
 import courserouter from "./Courses/courseRoutes";
+import Purchaserouter from "./Courses/purchaseCourseRoutes";
 
 const app = express();
 
@@ -35,7 +36,7 @@ app.get("/", (req, res) => {
 //Routes
 app.use("/api/users", userRouter);
 app.use("/api/course", courserouter);
-app.use("/api/books", bookRouter);
+app.use("/api/purchase", Purchaserouter);
 
 //Global error Handler
 app.use(globalErrorHandler);

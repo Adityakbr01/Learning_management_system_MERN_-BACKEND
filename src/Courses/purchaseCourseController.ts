@@ -6,7 +6,7 @@ import { CoursePurchase } from "./purchaseCourseModel";
 import { Lecture } from "../Lecture/lectureModel";
 import User from "../user/userModel";
 
-const stripe = new Stripe(config.Publishable_key_STRIP as string, {
+const stripe = new Stripe(config.SecretKey_STRIP!, {
   apiVersion: "2024-12-18.acacia",
 });
 
@@ -98,7 +98,10 @@ export const createCheckOutSesion = async (
   }
 };
 
-export const striptWebhook = async (req: Request, res: Response) => {
+export const striptWebhook = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   let event;
 
   try {
@@ -106,7 +109,8 @@ export const striptWebhook = async (req: Request, res: Response) => {
     const secret = config.WEBHOOK_ENDPOINT_SECRET; // Direct assignment, no need to cast
 
     if (!secret) {
-      return res.status(500).json({ message: "Webhook secret is missing." });
+      res.status(500).json({ message: "Webhook secret is missing." });
+      return;
     }
     const header = stripe.webhooks.generateTestHeaderString({
       payload: payloadString,
@@ -118,10 +122,12 @@ export const striptWebhook = async (req: Request, res: Response) => {
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error("Webhook Error:", error.message);
-      return res.status(400).send(`Webhook Error: ${error.message}`);
+      res.status(400).send(`Webhook Error: ${error.message}`);
+      return;
     } else {
       console.error("Unknown Error:", error);
-      return res.status(500).send("Webhook Error: An unknown error occurred");
+      res.status(500).send("Webhook Error: An unknown error occurred");
+      return;
     }
   }
 
@@ -136,14 +142,14 @@ export const striptWebhook = async (req: Request, res: Response) => {
       });
 
       if (!purchase) {
-        return res.status(404).json({ message: "Purchase not found" });
+        res.status(404).json({ message: "Purchase not found" });
+        return;
       }
 
       // Ensure `courseId` is populated and check its type
       if (!purchase.courseId || !(purchase.courseId instanceof Course)) {
-        return res
-          .status(400)
-          .json({ message: "Course not properly populated." });
+        res.status(400).json({ message: "Course not properly populated." });
+        return;
       }
 
       const course = purchase.courseId; // Safely access the populated Course document
@@ -180,12 +186,80 @@ export const striptWebhook = async (req: Request, res: Response) => {
       );
 
       // Respond with success
-      return res.status(200).json({ message: "Purchase successful" });
+      res.status(200).json({ message: "Purchase successful" });
+      return;
     } catch (error) {
       console.error("Error processing checkout session:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: "Internal server error" });
+      return;
     }
   } else {
-    return res.status(400).json({ message: "Unhandled event type" });
+    res.status(400).json({ message: "Unhandled event type" });
+    return;
+  }
+};
+
+export const getCourseDetailWithPurchaseStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { courseId } = req.params;
+    const userId = req.id; // Ensure this is set in middleware
+
+    if (!courseId) {
+      return res.status(400).json({ message: "Course ID is required." });
+    }
+
+    const course = await Course.findById(courseId)
+      .populate("creator")
+      .populate("lectures");
+
+    if (!course) {
+      return res.status(404).json({ message: "Course not found!" });
+    }
+
+    const purchase = await CoursePurchase.findOne({ userId, courseId });
+
+    return res.status(200).json({
+      message: "Course details retrieved successfully.",
+      course,
+      purchased: !!purchase, // Converts to boolean
+    });
+  } catch (error) {
+    console.error("Error fetching course details:", error);
+    return res.status(500).json({
+      message: "An error occurred while fetching course details.",
+    });
+  }
+};
+
+export const getAllPurchasedCourse = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const purchasedCourses = await CoursePurchase.find({
+      status: "complete",
+    }).populate("courseId");
+
+    if (purchasedCourses.length === 0) {
+      return res.status(404).json({
+        message: "No purchased courses found.",
+        purchasedCourses: [],
+      });
+    }
+
+    return res.status(200).json({
+      message: "Purchased courses retrieved successfully.",
+      purchasedCourses,
+    });
+  } catch (error) {
+    console.error("Error fetching purchased courses:", error);
+    return res.status(500).json({
+      message: "An error occurred while fetching purchased courses.",
+    });
   }
 };
