@@ -11,18 +11,18 @@ const courseProgressRouter = express.Router();
 
 courseProgressRouter.get("/:courseId", isAuthenticated, getCourseProgress);
 courseProgressRouter.post(
-  "/courseId/lecture/:lectureId/view",
+  "/:courseId/lecture/:lectureId/view",
   isAuthenticated,
   updateLectureProgress
 );
 
 courseProgressRouter.post(
-  "/courseId/complete",
+  "/:courseId/complete",
   isAuthenticated,
   markAsCompleted
 );
 courseProgressRouter.post(
-  "/courseId/incomplete",
+  "/:courseId/incomplete",
   isAuthenticated,
   markAsInCompleted
 );

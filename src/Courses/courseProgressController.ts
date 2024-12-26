@@ -26,16 +26,37 @@ export const getCourseProgress = async (
       userId,
     }).populate("courseId");
 
+    const courseDetails = await Course.findById(courseId).populate("lectures");
     // If course not found
-    if (!courseProgress?.courseId) {
-      const courseDetails = await Course.findById(courseId);
+    // if (!courseProgress) {
+    //   const courseDetails = await Course.findById(courseId).populate(
+    //     "lectures"
+    //   );
+    //   console.log("Course Details:", courseDetails);
 
-      if (!courseDetails) {
-        res.status(404).json({ message: "Course not found" });
-        return; // Prevent further execution after sending the response
-      }
+    //   if (!courseDetails) {
+    //     res.status(404).json({ message: "Course not found" });
+    //     return; // Prevent further execution after sending the response
+    //   }
 
-      // Step 2: Return course details with empty progress
+    //   // Step 2: Return course details with empty progress
+    //   res.status(200).json({
+    //     data: {
+    //       courseDetails,
+    //       progress: [],
+    //       completed: false,
+    //     },
+    //   });
+    //   return;
+    // }
+
+    if (!courseDetails) {
+      res.status(404).json({ message: "Course not found" });
+      return; // Prevent further execution after sending the response
+    }
+
+    if (!courseProgress) {
+      console.log("Hited");
       res.status(200).json({
         data: {
           courseDetails,
@@ -49,7 +70,7 @@ export const getCourseProgress = async (
     // Step 3: Return the user's course progress along with course details
     res.status(200).json({
       data: {
-        courseDetails: courseProgress.courseId,
+        courseDetails,
         progress: courseProgress.lectureProgress,
         completed: courseProgress.completed,
       },
