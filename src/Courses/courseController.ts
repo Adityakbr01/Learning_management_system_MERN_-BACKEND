@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
-import { Course } from "./coursesModel";
 import { deleteMediaFromCloudinary, uploadMedia } from "../utils/cloudinary";
+import { Course } from "./coursesModel";
 
 interface AuthenticatedRequest extends Request {
   id?: string;
@@ -250,24 +250,73 @@ const getPublishedCourse = async (
   }
 };
 
+export const searchCourse = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { query = "", categories = [], sortByPrice = "" } = req.query;
 
+    // Parse categories to ensure it's always an array
+    const parsedCategories = Array.isArray(categories)
+      ? categories
+      : typeof categories === "string"
+      ? [categories]
+      : [];
 
+    // Initialize Search Criteria
+    const SearchCriteria: Record<string, any> = {
+      isPublished: true,
+    };
 
+    // Add query-based matching for title and subtitle
+    if (query) {
+      SearchCriteria.$or = [
+        { courseTitle: { $regex: query, $options: "i" } },
+        { subTitle: { $regex: query, $options: "i" } },
+      ];
+    }
 
+    // Add strict category filter if categories are provided
+    if (parsedCategories.length > 0) {
+      SearchCriteria.category = { $in: parsedCategories };
+    }
 
+    // Define Sorting Options
+    const sortOptions: { [key: string]: 1 | -1 } = {};
+    if (sortByPrice === "low") {
+      sortOptions.coursePrice = 1; // Ascending order
+    } else if (sortByPrice === "high") {
+      sortOptions.coursePrice = -1; // Descending order
+    }
 
+    console.log("Search Criteria:", SearchCriteria);
+    console.log("Sort Options:", sortOptions);
 
+    // Fetch Courses
+    const courses = await Course.find(SearchCriteria)
+      .populate({ path: "creator", select: "name photoUrl" })
+      .sort(sortOptions);
 
-
-
-
-
+    res.status(200).json({
+      success: true,
+      courses: courses || [],
+    });
+  } catch (error) {
+    console.error("Error in searchCourse:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while searching for courses.",
+    });
+  }
+};
 
 export {
   createCourse,
-  getCreatorCourses,
   editCourse,
   getCourseById,
+  getCreatorCourses,
   getPublishedCourse,
 };
 

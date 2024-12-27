@@ -118,7 +118,9 @@ const getUserProfile = async (
       return next(createHttpError(401, "Unauthorized: Missing user ID"));
     }
 
-    const user = await User.findById(userId).select("-password");
+    const user = await User.findById(userId)
+      .select("-password")
+      .populate("enrolledCourses");
 
     if (!user) {
       return next(createHttpError(404, "User not found"));

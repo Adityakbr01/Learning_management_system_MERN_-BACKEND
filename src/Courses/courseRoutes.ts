@@ -6,6 +6,7 @@ import {
   getCourseById,
   getCreatorCourses,
   getPublishedCourse,
+  searchCourse,
   togglePublishCourse,
 } from "./courseController";
 import upload from "../utils/multer";
@@ -21,8 +22,9 @@ import createHttpError from "http-errors";
 
 const courserouter = express.Router();
 courserouter.post("/", isAuthenticated, createCourse);
+courserouter.get("/search", isAuthenticated, searchCourse);
 courserouter.get("/", isAuthenticated, getCreatorCourses);
-courserouter.get("/publishedCourse", isAuthenticated, getPublishedCourse);
+courserouter.get("/publishedCourse", getPublishedCourse);
 courserouter.put(
   "/:courseId",
   isAuthenticated,
