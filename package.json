@@ -2,10 +2,11 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "This is book Store Backend Project",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "dev": "nodemon server.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "start": "node dist/app.js"
   },
   "keywords": [
     "REST",
