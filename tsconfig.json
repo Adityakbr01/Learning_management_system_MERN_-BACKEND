@@ -3,11 +3,11 @@
     "target": "es6",
     "module": "commonjs",
     "outDir": "./dist",
-    "rootDir": "./",
-    "strict": true,
+    "rootDir": ".",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "typeRoots": ["node_modules/@types", "src/types"]
+    "typeRoots": ["node_modules/@types", "src/types"],
+    "types": ["node", "express", "http-errors", "jsonwebtoken", "multer"]
   },
   "include": ["src/**/*", "server.ts"],
   "exclude": ["node_modules"]
