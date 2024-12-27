@@ -2,9 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
 import { deleteMediaFromCloudinary, uploadMedia } from "../utils/cloudinary";
 import { Course } from "./coursesModel";
-interface AuthenticatedRequest extends Request {
-  id?: string;
-}
+// import { AuthenticatedRequest } from "../middlewares/isAuthenticated";
 
 const createCourse = async (
   req: AuthenticatedRequest,
@@ -39,7 +37,8 @@ const createCourse = async (
     next(createHttpError(500, "Failed to create course."));
   }
 };
-interface AuthenticatedRequest extends Request {
+
+export interface AuthenticatedRequest extends Request {
   id?: string;
 }
 
@@ -80,13 +79,6 @@ const getCreatorCourses = async (
   }
 };
 
-interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    role: string;
-  };
-  file?: Express.Multer.File; // For file uploads
-}
 // Middleware Function to Edit a Course
 const editCourse = async (
   req: AuthenticatedRequest,
@@ -149,11 +141,8 @@ const editCourse = async (
     next(createHttpError(500, "Failed to update course"));
   }
 };
-interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    role: string;
-  };
+export interface AuthenticatedRequest extends Request {
+  user: any; // Isko apne user model ke according change karein
 }
 
 // Controller to Get Course by ID

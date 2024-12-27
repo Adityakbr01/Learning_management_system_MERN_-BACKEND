@@ -106,8 +106,11 @@ const logoutUser = async (
     next(createHttpError(500, "Failed to log out"));
   }
 };
+export interface AuthenticatedRequest extends Request {
+  id?: string;
+}
 const getUserProfile = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -137,7 +140,7 @@ const getUserProfile = async (
 };
 
 const updateProfile = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {

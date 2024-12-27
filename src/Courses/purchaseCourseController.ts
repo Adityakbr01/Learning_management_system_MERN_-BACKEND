@@ -10,8 +10,12 @@ const stripe = new Stripe(config.SecretKey_STRIP!, {
   apiVersion: "2024-12-18.acacia",
 });
 
+export interface AuthenticatedRequest extends Request {
+  id?: string;
+}
+
 export const createCheckOutSesion = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -200,7 +204,7 @@ export const striptWebhook = async (
 };
 
 export const getCourseDetailWithPurchaseStatus = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {

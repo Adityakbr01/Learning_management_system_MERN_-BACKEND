@@ -5,9 +5,7 @@
     "outDir": "./dist", // Set outDir to dist in the root folder
     "rootDir": "./", // Set rootDir to src
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    
+    "skipLibCheck": true
   },
-  "include": ["src/**/*", "server.ts"], // Don't include server.ts here
-  "exclude": ["node_modules"]
+  "include": ["src/**/*", "server.ts"] // Don't include server.ts here
 }

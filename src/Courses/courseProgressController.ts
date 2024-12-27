@@ -4,8 +4,12 @@ import { CourseProgress } from "./courseProgressModel";
 import { Course } from "./coursesModel";
 import { Request, Response, NextFunction } from "express";
 
+export interface AuthenticatedRequest extends Request {
+  id?: string;
+}
+
 export const getCourseProgress = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -82,7 +86,7 @@ export const getCourseProgress = async (
 };
 
 export const updateLectureProgress = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -153,7 +157,7 @@ export const updateLectureProgress = async (
 };
 
 export const markAsCompleted = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -191,7 +195,7 @@ export const markAsCompleted = async (
 };
 
 export const markAsInCompleted = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
