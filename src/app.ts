@@ -31,7 +31,6 @@ app.use(cookieParser());
 app.get("/", (req, res) => {
   const err = createHttpError(400, "Somthinh went Wrong");
   throw err;
-  res.send("Working");
 });
 
 //Routes
