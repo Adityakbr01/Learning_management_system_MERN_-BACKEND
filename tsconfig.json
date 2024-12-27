@@ -6,7 +6,7 @@
     "rootDir": "./", // Set rootDir to src
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "typeRoots": ["node_modules/@types", "src/types"],
+    // "typeRoots": ["node_modules/@types", "src/types"],
     "types": ["node", "express", "http-errors", "jsonwebtoken", "multer"]
   },
   "include": ["src/**/*", "server.ts"], // Don't include server.ts here
