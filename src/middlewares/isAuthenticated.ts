@@ -3,11 +3,11 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { config } from "../config/config";
 import { Response, Request, NextFunction } from "express";
 
-declare module "express-serve-static-core" {
-  interface Request {
-    id?: string;
-  }
-}
+// declare module "express-serve-static-core" {
+//   interface Request {
+//     id?: string;
+//   }
+// }
 
 const isAuthenticated = async (
   req: Request,
