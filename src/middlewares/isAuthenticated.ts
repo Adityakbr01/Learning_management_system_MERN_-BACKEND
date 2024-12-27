@@ -9,6 +9,10 @@ import { Response, Request, NextFunction } from "express";
 //   }
 // }
 
+export interface AuthenticatedRequest extends Request {
+  id?: string; // custom property, like `id` from your authentication middleware
+}
+
 const isAuthenticated = async (
   req: Request,
   res: Response,
