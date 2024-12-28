@@ -108,6 +108,7 @@ const logoutUser = async (
 };
 export interface AuthenticatedRequest extends Request {
   id?: string;
+  file?: any;
 }
 const getUserProfile = async (
   req: AuthenticatedRequest,
