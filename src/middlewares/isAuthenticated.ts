@@ -1,11 +1,9 @@
 import createHttpError from "http-errors";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { config } from "../config/config";
-import { Response, Request, NextFunction } from "express";
-import cookieParser from "cookie-parser";
+import type { Response, Request, NextFunction } from "express";
 
 // Middleware to parse cookies
-
 
 // Define the decoded token structure
 interface DecodedToken extends JwtPayload {
