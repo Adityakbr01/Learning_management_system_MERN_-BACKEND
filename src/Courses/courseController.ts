@@ -4,10 +4,10 @@ import { deleteMediaFromCloudinary, uploadMedia } from "../utils/cloudinary";
 import { Course } from "./coursesModel";
 // import { AuthenticatedRequest } from "../middlewares/isAuthenticated";
 
-export interface AuthenticatedRequest extends Request {
-  id?: string;
-  file?: Express.Multer.File;
-}
+// export interface AuthenticatedRequest extends Request {
+//   id?: string;
+//   file?: Express.Multer.File;
+// }
 
 const createCourse = async (
   req: AuthenticatedRequest,
