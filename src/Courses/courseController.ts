@@ -4,6 +4,11 @@ import { deleteMediaFromCloudinary, uploadMedia } from "../utils/cloudinary";
 import { Course } from "./coursesModel";
 // import { AuthenticatedRequest } from "../middlewares/isAuthenticated";
 
+export interface AuthenticatedRequest extends Request {
+  id?: string;
+  file?: Express.Multer.File;
+}
+
 const createCourse = async (
   req: AuthenticatedRequest,
   res: Response,
@@ -40,6 +45,7 @@ const createCourse = async (
 
 export interface AuthenticatedRequest extends Request {
   id?: string;
+  file?: Express.Multer.File;
 }
 
 const getCreatorCourses = async (
@@ -143,6 +149,7 @@ const editCourse = async (
 };
 export interface AuthenticatedRequest extends Request {
   user: any; // Isko apne user model ke according change karein
+  file?: Express.Multer.File;
 }
 
 // Controller to Get Course by ID

@@ -13,7 +13,7 @@ interface DecodedToken extends JwtPayload {
 // Custom Request interface
 export interface AuthenticatedRequest extends Request {
   id?: string; // Attach user ID to request
-  file?: any;
+  file?: Express.Multer.File;
 }
 
 const isAuthenticated = async (
